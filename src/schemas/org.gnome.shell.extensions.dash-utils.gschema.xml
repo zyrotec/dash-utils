@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="dash-utils">
+  <schema id="org.gnome.shell.extensions.dash-utils" path="/org/gnome/shell/extensions/dash-utils/">
+    <key name="enable-feature" type="b">
+      <default>false</default>
+      <summary>Enable feature</summary>
+      <description>Whether the feature is enabled</description>
+    </key>
+    <key name="some-number" type="i">
+      <default>10</default>
+      <range min="0" max="100"/>
+      <summary>Some number</summary>
+      <description>An example integer setting</description>
+    </key>
+  </schema>
+</schemalist>

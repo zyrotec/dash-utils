@@ -1,0 +1,11 @@
+{
+  "uuid": "dash-utils@zyrotec",
+  "name": "Zyrotec Dash Utils",
+  "description": "Extend the gnome dash functionality",
+  "settings-schema": "org.gnome.shell.extensions.dash-utils",
+  "gettext-domain": "dash-utils",
+  "shell-version": [
+    "50"
+  ],
+  "version": 1
+}
