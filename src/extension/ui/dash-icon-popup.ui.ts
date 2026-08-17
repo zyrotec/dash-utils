@@ -83,6 +83,9 @@ export class DashIconPopupManager {
     private _gobalStageMotionEventSignalId: number | null = null;
     private _hoverTimeoutSignalId: number | null = null;
 
+    private _pointerPollTimeoutId: number | null = null;
+    private readonly _pointerPollIntervalMs: number = 100;
+
     constructor(dashIconPopup: DashIconPopup, appIcons: AppIcon[]) {
         this._dashIconPopup = dashIconPopup;
         this._appIcons = appIcons;
@@ -118,13 +121,14 @@ export class DashIconPopupManager {
     }
 
     private _startPointerTracking(): void {
-        if (this._gobalStageMotionEventSignalId !== null) {
+        if (this._pointerPollTimeoutId !== null) {
             return;
         }
 
-        this._gobalStageMotionEventSignalId = global.stage.connect("motion-event", () => {
+        this._pointerPollTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, this._pointerPollIntervalMs, () => {
             if (!this._dashIconPopup?.getIsOpen()) {
-                return Clutter.EVENT_PROPAGATE;
+                this._pointerPollTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
             }
 
             if (!this._isHovered()) {
@@ -132,14 +136,14 @@ export class DashIconPopupManager {
                 this._dashIconPopup?.closeMenu();
             }
 
-            return Clutter.EVENT_PROPAGATE;
+            return GLib.SOURCE_CONTINUE;
         });
     }
 
     private _stopPointerTracking(): void {
-        if (this._gobalStageMotionEventSignalId !== null) {
-            global.stage.disconnect(this._gobalStageMotionEventSignalId);
-            this._gobalStageMotionEventSignalId = null;
+        if (this._pointerPollTimeoutId !== null) {
+            GLib.source_remove(this._pointerPollTimeoutId);
+            this._pointerPollTimeoutId = null;
         }
     }
 
@@ -150,8 +154,8 @@ export class DashIconPopupManager {
         const popup = this._dashIconPopup?.actor.visible ? this._dashIconPopup.actor.get_transformed_extents() : null;
         const dash = Main.overview.dash._box.visible ? Main.overview.dash._box.get_transformed_extents() : null;
 
-        return (icon?.contains_point(point) ?? false) || 
-            (popup?.contains_point(point) ?? false) || 
+        return (icon?.contains_point(point) ?? false) ||
+            (popup?.contains_point(point) ?? false) ||
             (dash?.contains_point(point) ?? false);
     }
 
