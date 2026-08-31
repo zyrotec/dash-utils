@@ -55,6 +55,23 @@ export class DashToDockUtil {
         }
     }
 
+    public getDashToDockContainer(): Clutter.Actor | null {
+        try{
+            const stage = global.stage as Clutter.Actor;
+            return this._findActorByName(stage, 'dashtodockContainer');
+        } catch(error) {
+            return null;
+        }
+    }
+
+    public getDashToDockDash(): any {
+        return this._dash;
+    }
+
+    public getDashToDockActor(): St.BoxLayout | null {
+        return this._dockActor as St.BoxLayout ?? null;
+    }
+
     public destroy(): void {
         this.unpinDock();
         this._dockActor = null;

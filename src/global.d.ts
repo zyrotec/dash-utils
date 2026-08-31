@@ -6,14 +6,6 @@ import '@girs/gnome-shell/extensions/global';
 import { IMprisSignalMap } from './interfaces/mpris/mpris-signal-map.interface.js';
 import { DashPopupMenuSignalMap } from './extension/interfaces/dash-popup-menu-signal-map.interface.js';
 
-declare module 'resource:///org/gnome/shell/ui/popupMenu.js' {
-    namespace PopupMenu {
-        interface SignalMap {
-            'dash-popup-menu-open-state-changed': [boolean];
-        }
-    }
-}
-
 declare module 'resource:///org/gnome/shell/misc/signals.js' {
     export interface EventEmitter {
         connect<K extends keyof IMprisSignalMap>(

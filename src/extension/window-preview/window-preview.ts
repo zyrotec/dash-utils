@@ -1,26 +1,40 @@
 import St from 'gi://St';
+import Shell from 'gi://Shell';
 import { AppIcon } from 'resource:///org/gnome/shell/ui/appDisplay.js';
-import { DashUtil } from '../utils/dash.util.js';
-import { DashIconPopup, DashIconPopupManager } from '../ui/dash-icon-popup.ui.js';
+import { WindowPreviewPopup } from '../ui/window-preview-popup.ui.js';
+import { Dash } from 'resource:///org/gnome/shell/ui/dash.js';
+
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 export class WindowPreview {
-    private _dashUtil = new DashUtil();
-    private _dashIconPopup: DashIconPopup | null = null;
-    private _dashIconPopupManager: DashIconPopupManager | null = null;
+    private _dashIconPopup: WindowPreviewPopup | null = null;
+
+    private _dashBoxSignalids = new Map<number, St.Widget>();
 
     constructor() {
         this._buildUI();
+        this._handleSignals();
     }
 
     private _buildUI(): void {
-        const dash = this._dashUtil.getDashBox();
-        this._dashIconPopup = new DashIconPopup(dash, 0.5, St.Side.BOTTOM);
-        this._dashIconPopupManager = new DashIconPopupManager(this._dashIconPopup, this._dashUtil.getAppIcons());
+        this._dashIconPopup = new WindowPreviewPopup();
+    }
+
+    private _handleSignals(): void{
+        const childAddedId = Main.overview.dash._box.connect("child-added", () => {
+            this._dashIconPopup?.refreshAppIcons();
+        });
+        this._dashBoxSignalids.set(childAddedId, Main.overview.dash._box);
+    }
+
+    private onShellWindowChanged(): void {
+
     }
 
     public destroy(): void {
-        this._dashIconPopupManager?.destroy();
-        this._dashIconPopupManager = null;
+        for (const [id, actor] of this._dashBoxSignalids.entries()) {
+            actor.disconnect(id);
+        }
 
         this._dashIconPopup?.destroy();
         this._dashIconPopup = null;
